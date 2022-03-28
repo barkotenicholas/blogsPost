@@ -7,5 +7,4 @@ data class User(
     val email :String,
     val company :Company,
     val website:String
-) {
-}
+)
