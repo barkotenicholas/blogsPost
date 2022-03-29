@@ -42,6 +42,11 @@ class DetailActivity : AppCompatActivity() {
             binding.tvWebsite.text = user.website
         })
 
+
+        viewModel.errorMessage.observe(this, Observer { errorMessage ->{
+
+        } })
+
         viewModel.getPostDetails(postId)
 
     }

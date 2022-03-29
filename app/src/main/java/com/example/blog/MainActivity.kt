@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,13 +30,24 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.post.observe(this, Observer { posts ->
             Log.i(TAG, "Number of Post ${posts.size}")
+            val numElements = blogPosts.size
+            blogPosts.clear()
             blogPosts.addAll(posts)
             blogPostAdapter.notifyDataSetChanged()
+            binding.rvPosts.smoothScrollToPosition(numElements)
         })
         viewModel.isLoading.observe(this, Observer { isLoading ->
             Log.i(TAG, "isLoading $isLoading")
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         })
+        viewModel.errorMessage.observe(this, Observer { errorMessage->
+            if(errorMessage == null){
+                binding.tvError.visibility = View.GONE
+            }else{
+                binding.tvError.visibility = View.VISIBLE
+                Toast.makeText(this,errorMessage,Toast.LENGTH_SHORT).show()
+
+        } })
 
         blogPostAdapter = BlogPostAdapter(this, blogPosts, object : BlogPostAdapter.ItemClickListener{
             override fun onClick(post: Post) {

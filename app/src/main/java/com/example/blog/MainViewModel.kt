@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.blog.api.RetrofitInstance
 import com.example.blog.models.Post
 import kotlinx.coroutines.launch
+import java.lang.Exception
 
 private const val TAG = "MainViewModel"
 
@@ -21,15 +22,29 @@ class MainViewModel : ViewModel(){
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage :LiveData<String?>
+        get() = _errorMessage
+
+    private var currentPage = 1
     fun getPosts() {
 
         viewModelScope.launch {
 
             _isLoading.value = true
-            val fetchPosts = RetrofitInstance.api.getPost()
-            Log.i(TAG, "getPosts: $fetchPosts")
-            _post.value =fetchPosts
-            _isLoading.value = false
+            try {
+                val fetchPosts = RetrofitInstance.api.getPost(currentPage)
+                currentPage +=1
+                Log.i(TAG, "getPosts: $fetchPosts")
+                val currentPost = _post.value ?: emptyList()
+                _post.value = currentPost + fetchPosts
+            }catch (e: Exception){
+                _errorMessage.value = e.message
+                Log.e(TAG, "getPostDetails: ${e.message}", )
+            }finally {
+                _isLoading.value = false
+
+            }
         }
 
     }
