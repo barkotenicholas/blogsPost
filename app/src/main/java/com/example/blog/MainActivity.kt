@@ -1,5 +1,6 @@
 package com.example.blog
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.blog.databinding.ActivityMainBinding
 import com.example.blog.models.Post
 private const val TAG = "MainActivity"
+const val EXTRA_POST_ID = "EXTRA_POST_ID"
 
 class MainActivity : AppCompatActivity() {
 
@@ -35,7 +37,13 @@ class MainActivity : AppCompatActivity() {
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         })
 
-        blogPostAdapter = BlogPostAdapter(this, blogPosts)
+        blogPostAdapter = BlogPostAdapter(this, blogPosts, object : BlogPostAdapter.ItemClickListener{
+            override fun onClick(post: Post) {
+                val intent = Intent(this@MainActivity,DetailActivity::class.java);
+                intent.putExtra(EXTRA_POST_ID,post.id)
+                startActivity(intent)
+            }
+        })
         binding.rvPosts.adapter = blogPostAdapter
         binding.rvPosts.layoutManager = LinearLayoutManager(this)
 
